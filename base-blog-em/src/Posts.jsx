@@ -7,6 +7,7 @@ const maxPostPage = 10;
 async function fetchPosts() {
   const response = await fetch(
     'https://jsonplaceholder.typicode.com/posts?_limit=10&_page=0'
+    // 'https://jsonplaceholder1111.typicode.com/posts?_limit=10&_page=0' // 오류 유도용
   );
   return response.json();
 }
@@ -17,9 +18,18 @@ export function Posts() {
 
   // replace with useQuery
   // const data = []; // 임시 하드코딩 데이터
-  const { data } = useQuery('posts', fetchPosts);
+  const { data, isLoading, error, isError } = useQuery('posts', fetchPosts);
 
-  if (!data) return <div></div>; // 얼리 리턴 형태로 처리
+  // if (!data) return <div></div>; // 얼리 리턴 형태로 처리
+  if (isLoading) return <h3>Loading...</h3>; // 로딩상태 얼리 리턴으로 처리
+  if (isError)
+    // 에러상태 얼리 리턴으로 처리
+    return (
+      <>
+        <h3>Oops, somthing went wrong!</h3>
+        <p>{error.toString()}</p>
+      </>
+    );
 
   return (
     <>
