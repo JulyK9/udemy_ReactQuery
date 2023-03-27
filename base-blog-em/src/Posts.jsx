@@ -18,7 +18,9 @@ export function Posts() {
 
   // replace with useQuery
   // const data = []; // 임시 하드코딩 데이터
-  const { data, isLoading, error, isError } = useQuery('posts', fetchPosts);
+  const { data, isLoading, error, isError } = useQuery('posts', fetchPosts, {
+    staleTime: 2000,
+  });
 
   // if (!data) return <div></div>; // 얼리 리턴 형태로 처리
   if (isLoading) return <h3>Loading...</h3>; // 로딩상태 얼리 리턴으로 처리
