@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, useMutation } from 'react-query';
 
 async function fetchComments(postId) {
   const response = await fetch(
@@ -49,6 +49,9 @@ export function PostDetail({ post }) {
     () => fetchComments(post.id)
   );
 
+  const deleteMutation = useMutation((postId) => deletePost(postId));
+  // useMutation 함수는 객체를 반환함
+
   if (isLoading) return <h2>Loading...</h2>;
   if (isError)
     return (
@@ -64,7 +67,19 @@ export function PostDetail({ post }) {
   return (
     <>
       <h3 style={{ color: 'blue' }}>{post.title}</h3>
-      <button>Delete</button> <button>Update title</button>
+      {/* <button>Delete</button> <button>Update title</button> */}
+      {/* deleteMutation은 객체를 반환하는데 속성함수인 mutate를 실행 */}
+      <button onClick={() => deleteMutation.mutate(post.id)}>Delete</button>
+      {deleteMutation.isError && (
+        <p style={{ color: 'red' }}>Error deleting the post</p>
+      )}
+      {deleteMutation.isLoading && (
+        <p style={{ color: 'blue' }}>Deleting the post</p>
+      )}
+      {deleteMutation.isSuccess && (
+        <p style={{ color: 'green' }}>Post has (not) beed deleted</p>
+      )}
+      <button>Update title</button>
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data.map((comment) => (
