@@ -40,7 +40,8 @@ export function Posts() {
   // replace with useQuery
   // const data = []; // 임시 하드코딩 데이터
   // const { data, isLoading, error, isError } = useQuery('posts', fetchPosts, {
-  const { data, isLoading, error, isError } = useQuery(
+  // const { data, isLoading, error, isError } = useQuery(
+  const { data, isLoading, error, isError, isFetching } = useQuery(
     ['posts', currentPage],
     () => fetchPosts(currentPage), // 주의: 인자를 들어갈 때는 반드시 무명함수로 작성
     {
@@ -51,6 +52,7 @@ export function Posts() {
 
   // if (!data) return <div></div>; // 얼리 리턴 형태로 처리
   if (isLoading) return <h3>Loading...</h3>; // 로딩상태 얼리 리턴으로 처리
+  // if (isFetching) return <h3>Fetching in progress...</h3>; // 캐시된 데이터의 존재여부와 상관없이 프리페치 전 매번 동작
   if (isError)
     // 에러상태 얼리 리턴으로 처리
     return (
