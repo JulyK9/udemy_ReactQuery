@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { useQuery } from 'react-query';
+import { useEffect, useState } from 'react';
+// import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { PostDetail } from './PostDetail';
 
@@ -21,6 +22,21 @@ export function Posts() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState(null);
 
+  // prefetchQuery를 통해 nextPage 정보를 사전 페칭하여 페이지 이동시 사용자 경험을 향상시킬 수 있음
+  const queryClient = useQueryClient();
+
+  // currentPage가 바뀔 때마다 로직이 재실행 됨
+  // currentPage 변경으로 nextPage도 바뀌게 되고 그에 따라 prefetchQuery로 가져오는 nextPage 쿼리키도 바뀜
+  useEffect(() => {
+    // 범위 외의 데이터를 가져오지 않도록 조건 추가
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      queryClient.prefetchQuery(['posts', nextPage], () =>
+        fetchPosts(nextPage)
+      );
+    }
+  }, [currentPage, queryClient]);
+
   // replace with useQuery
   // const data = []; // 임시 하드코딩 데이터
   // const { data, isLoading, error, isError } = useQuery('posts', fetchPosts, {
@@ -29,6 +45,7 @@ export function Posts() {
     () => fetchPosts(currentPage), // 주의: 인자를 들어갈 때는 반드시 무명함수로 작성
     {
       staleTime: 2000,
+      keepPreviousData: true, // 쿼리키가 바뀔때도 지난 데이터 유지(이전 페이지로 돌아갈 경우 해당 데이터가 캐시에 있도록)
     }
   );
 
