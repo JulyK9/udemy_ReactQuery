@@ -7,6 +7,7 @@ export function Loading(): ReactElement {
   // const isFetching = false; // for now, just don't display
   const isFetching = useIsFetching();
 
+  // 스피너를 보여주는 diplay 속성값이 isFeching 값에 따라 결정됨
   const display = isFetching ? 'inherit' : 'none';
 
   return (
