@@ -1,6 +1,7 @@
 // @ts-nocheck
 import dayjs from 'dayjs';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { useQuery } from 'react-query';
 
 import { axiosInstance } from '../../../axiosInstance';
 import { queryKeys } from '../../../react-query/constants';
@@ -70,7 +71,15 @@ export function useAppointments(): UseAppointments {
   //
   //    2. The getAppointments query function needs monthYear.year and
   //       monthYear.month
-  const appointments = {};
+
+  // const appointments = {};
+
+  const fallback = {}; // 빈 객체로 해당 월에 예약이 없다는 의미
+
+  const { data: appointments = fallback } = useQuery(
+    queryKeys.appointments,
+    () => getAppointments(monthYear.year, monthYear.month),
+  );
 
   /** ****************** END 3: useQuery  ******************************* */
 
