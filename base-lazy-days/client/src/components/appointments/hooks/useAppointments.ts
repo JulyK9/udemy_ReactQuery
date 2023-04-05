@@ -77,8 +77,14 @@ export function useAppointments(): UseAppointments {
   const fallback = {}; // 빈 객체로 해당 월에 예약이 없다는 의미
 
   const { data: appointments = fallback } = useQuery(
-    queryKeys.appointments,
+    // queryKeys.appointments,
+    [queryKeys.appointments, monthYear.year, monthYear.month],
     () => getAppointments(monthYear.year, monthYear.month),
+    {
+      // 쿼리키가 변경될 때까지 이전의 모든 데이터를 유지시켜주는 옵션, 다음 쿼리키에 대한 데이터를 로드하는 동안 플레이스홀더로 사용하는 것
+      // 하지만 이렇게 하면 다음 달로 이동시 데이터가 겹치는 현상 발생(백그라운드가 변경되기 때문) => 따라서 여기서는 적합한 옵션이 아님
+      // keepPreviousData: true,
+    },
   );
 
   /** ****************** END 3: useQuery  ******************************* */
