@@ -1,6 +1,7 @@
 // @ts-nocheck
 import dayjs from 'dayjs';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from 'react-query';
 
 import { axiosInstance } from '../../../axiosInstance';
 import { queryKeys } from '../../../react-query/constants';
@@ -63,6 +64,18 @@ export function useAppointments(): UseAppointments {
   /** ****************** START 3: useQuery  ***************************** */
   // useQuery call for appointments for the current monthYear
 
+  // prefetch next month when montYear changes
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // assume increment of one month
+    const nextMonthYear = getNewMonthYear(monthYear, 1);
+    queryClient.prefetchQuery(
+      [queryKeys.appointments, nextMonthYear.year, nextMonthYear.month],
+      () => getAppointments(nextMonthYear.year, nextMonthYear.month),
+    );
+  }, [queryClient, monthYear]);
+
   // TODO: update with useQuery!
   // Notes:
   //    1. appointments is an AppointmentDateMap (object with days of month
@@ -70,7 +83,21 @@ export function useAppointments(): UseAppointments {
   //
   //    2. The getAppointments query function needs monthYear.year and
   //       monthYear.month
-  const appointments = {};
+
+  // const appointments = {};
+
+  const fallback = {}; // 빈 객체로 해당 월에 예약이 없다는 의미
+
+  const { data: appointments = fallback } = useQuery(
+    // queryKeys.appointments,
+    [queryKeys.appointments, monthYear.year, monthYear.month],
+    () => getAppointments(monthYear.year, monthYear.month),
+    {
+      // 쿼리키가 변경될 때까지 이전의 모든 데이터를 유지시켜주는 옵션, 다음 쿼리키에 대한 데이터를 로드하는 동안 플레이스홀더로 사용하는 것
+      // 하지만 이렇게 하면 다음 달로 이동시 데이터가 겹치는 현상 발생(백그라운드가 변경되기 때문) => 따라서 여기서는 적합한 옵션이 아님
+      // keepPreviousData: true,
+    },
+  );
 
   /** ****************** END 3: useQuery  ******************************* */
 
