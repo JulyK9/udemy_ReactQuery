@@ -1,6 +1,12 @@
 // @ts-nocheck
 import dayjs from 'dayjs';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 
 import { axiosInstance } from '../../../axiosInstance';
@@ -10,7 +16,7 @@ import { AppointmentDateMap } from '../types';
 import { getAvailableAppointments } from '../utils';
 import { getMonthYearDetails, getNewMonthYear, MonthYear } from './monthYear';
 
-// for useQuery call
+// fetch function for useQuery call
 async function getAppointments(
   year: string,
   month: string,
@@ -60,6 +66,17 @@ export function useAppointments(): UseAppointments {
   //   appointments that the logged-in user has reserved (in white)
   const { user } = useUser();
 
+  // data는 useQuery가 셀렉트 함수를 실행할 때 얻는 appointments 데이터임
+  // 익명 함수로 최적화를 수행하지 않고 있음. 따라서 훅에 있을 때마다 변경될 것임.
+  // 이를 안정적인 함수로 만들기 위해서 useCallback을 실행해줌
+  // 종속성 배열에는 user를 넣어줌 => 사용자가 바뀔때마다 함수를 변경해야 함
+  const selectFn = useCallback(
+    (data) => getAvailableAppointments(data, user),
+    [user],
+  );
+
+  // 최적화는 데이터의 변경 여부와 함수의 변경 여부를 확인하고 변경사항이 없으면 해당함수를 다시 실행하지 않음
+
   /** ****************** END 2: filter appointments  ******************** */
   /** ****************** START 3: useQuery  ***************************** */
   // useQuery call for appointments for the current monthYear
@@ -93,9 +110,14 @@ export function useAppointments(): UseAppointments {
     [queryKeys.appointments, monthYear.year, monthYear.month],
     () => getAppointments(monthYear.year, monthYear.month),
     {
+      // select 옵션은 데이터가 반환되기 전에 쿼리 결과에서 특정 데이터를 변환하거나 선택하는 데 사용됨.(따라서 필터링하는데 사용할 수 있음)
+      // select 옵션은 콜백 함수 형태
       // 쿼리키가 변경될 때까지 이전의 모든 데이터를 유지시켜주는 옵션, 다음 쿼리키에 대한 데이터를 로드하는 동안 플레이스홀더로 사용하는 것
       // 하지만 이렇게 하면 다음 달로 이동시 데이터가 겹치는 현상 발생(백그라운드가 변경되기 때문) => 따라서 여기서는 적합한 옵션이 아님
       // keepPreviousData: true,
+
+      // showAll이 참일 경우 함수를 실행하지 않고 모든 데이터를 반복 => 함수에 undefined 값을 줌
+      select: showAll ? undefined : selectFn,
     },
   );
 
