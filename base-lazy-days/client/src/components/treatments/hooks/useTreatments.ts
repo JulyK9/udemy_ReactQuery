@@ -30,11 +30,11 @@ export function useTreatments(): Treatment[] {
 
   // queryClient의 디폴트 옵션에서 queries 옵션으로 onError속성에 에러 핸들러를 추가해줬기 때문에 아래와 같이 변경하여 유일한 옵션이 되도록 변경
   const { data = fallback } = useQuery(queryKeys.treatments, getTreatments, {
-    staleTime: 600000, // 10 minutes
-    cacheTime: 900000, // 15 minutes(doesn't make sense for staleTime to exceed cacheTime)
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    // staleTime: 600000, // 10 minutes
+    // cacheTime: 900000, // 15 minutes(doesn't make sense for staleTime to exceed cacheTime)
+    // refetchOnMount: false,
+    // refetchOnWindowFocus: false,
+    // refetchOnReconnect: false,
   });
   return data;
 }
@@ -46,7 +46,7 @@ export function usePrefetchTreatments(): void {
   // 여기서 쿼리키는 어느 useQuery가 이 데이터를 찾아야하는지 알려주기 때문에 매우 중요함
   // 캐시에 있는 데이터가 이 useQueary 호출과 일치한다고 알려주는 것
   queryClient.prefetchQuery(queryKeys.treatments, getTreatments, {
-    staleTime: 600000, // 10 minutes
-    cacheTime: 900000, // 15 minutes(doesn't make sense for staleTime to exceed cacheTime)
+    // staleTime: 600000, // 10 minutes
+    // cacheTime: 900000, // 15 minutes(doesn't make sense for staleTime to exceed cacheTime)
   });
 }
