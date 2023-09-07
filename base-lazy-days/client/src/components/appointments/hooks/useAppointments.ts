@@ -16,6 +16,12 @@ import { AppointmentDateMap } from '../types';
 import { getAvailableAppointments } from '../utils';
 import { getMonthYearDetails, getNewMonthYear, MonthYear } from './monthYear';
 
+// common options for both useQuery and prefetchQuery
+const commonOptions = {
+  staleTime: 0, // immadiately
+  cacheTime: 300000, // 5 minutes
+};
+
 // fetch function for useQuery call
 async function getAppointments(
   year: string,
@@ -90,6 +96,7 @@ export function useAppointments(): UseAppointments {
     queryClient.prefetchQuery(
       [queryKeys.appointments, nextMonthYear.year, nextMonthYear.month],
       () => getAppointments(nextMonthYear.year, nextMonthYear.month),
+      commonOptions,
     );
   }, [queryClient, monthYear]);
 
@@ -118,6 +125,12 @@ export function useAppointments(): UseAppointments {
 
       // showAll이 참일 경우 함수를 실행하지 않고 모든 데이터를 반복 => 함수에 undefined 값을 줌
       select: showAll ? undefined : selectFn,
+      // staleTime: 0, // immadiately
+      // cacheTime: 300000, // 5 minutes
+      ...commonOptions,
+      refetchOnMount: true,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
     },
   );
 
