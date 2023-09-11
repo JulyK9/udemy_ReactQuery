@@ -37,7 +37,20 @@ export function useUser(): UseUser {
   // TODO: call useQuery to update user data from server
   // const user = null;
 
-  const { data: user } = useQuery(queryKeys.user, () => getUser(user));
+  const { data: user } = useQuery(queryKeys.user, () => getUser(user), {
+    // 초기 데이터를 캐시에 추가하고 싶을 때 initialData 옵션 사용
+    initialData: getStoredUser,
+    // onSuccess 콜백을 통해 user(received) 데이터를 로컬스토리지에 처리
+    // 쿼리 함수에서 데이터가 업데이트 되거나 () => getUser(user)
+    // setQueryData에서 데이터가 업데이트 될 때마다 호출됨 updateUser
+    onSuccess: (received: User | null) => {
+      if (!received) {
+        clearStoredUser();
+      } else {
+        setStoredUser(received);
+      }
+    },
+  });
 
   // meant to be called from useAuth
   function updateUser(newUser: User): void {
