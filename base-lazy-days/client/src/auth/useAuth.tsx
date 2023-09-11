@@ -15,6 +15,9 @@ type UserResponse = { user: User };
 type ErrorResponse = { message: string };
 type AuthResponseType = UserResponse | ErrorResponse;
 
+// 책임과 역할
+// useUser 훅에 내장된 함수들을 활용해 서버와 통신하도록 만드는 것
+
 export function useAuth(): UseAuth {
   const SERVER_ERROR = 'There was an error contacting the server.';
   const toast = useCustomToast();
