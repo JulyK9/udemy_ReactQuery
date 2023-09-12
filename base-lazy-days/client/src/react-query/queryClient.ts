@@ -32,5 +32,8 @@ export const queryClient = new QueryClient({
       refetchOnReconnect: false,
       refetchOnWindowFocus: false,
     },
+    mutations: {
+      onError: queryErrorHandler, // mutations도 오류 처리 기본값을 가지도록 처리
+    },
   },
 });
