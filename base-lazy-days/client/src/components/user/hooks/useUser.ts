@@ -61,7 +61,9 @@ export function useUser(): UseUser {
   // meant to be called from useAuth
   function clearUser() {
     // TODO: reset user to null in query cache
-    queryClient.setQueriesData(queryKeys.user, null);
+    queryClient.setQueryData(queryKeys.user, null);
+    queryClient.removeQueries('user-appointments');
+    // 하나 이상의 쿼리 키에 removeQueries를 실행하려면 removeQueries를 여러 번 동일하게 실행하면 됨
   }
 
   return { user, updateUser, clearUser };
