@@ -43,6 +43,7 @@ export function useUser(): UseUser {
     // onSuccess 콜백을 통해 user(received) 데이터를 로컬스토리지에 처리
     // 쿼리 함수에서 데이터가 업데이트 되거나 () => getUser(user)
     // setQueryData에서 데이터가 업데이트 될 때마다 호출됨 updateUser
+    // onSuccess 콜백은 setQueryData 다음이나 쿼리 함수가 성공한 다음 호출됨
     onSuccess: (received: User | null) => {
       if (!received) {
         clearStoredUser();
