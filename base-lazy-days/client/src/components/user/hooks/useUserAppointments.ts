@@ -25,7 +25,8 @@ export function useUserAppointments(): Appointment[] {
 
   const fallback: Appointment[] = [];
   const { data: userAppointments = fallback } = useQuery(
-    'user-appointments',
+    // 'user-appointments',
+    [queryKeys.appointments, queryKeys.user, user?.id], // 쿼리키 업데이트
     () => getUserAppointments(user),
     // user가 참일 때만(존재할 때만) enabled 되도록(쿼리 요청을 하도록) 옵션 설정
     // 느낌표 연산자를 통해 명시적으로 boolean 타입으로 변환

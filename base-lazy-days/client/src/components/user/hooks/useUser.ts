@@ -63,8 +63,12 @@ export function useUser(): UseUser {
   function clearUser() {
     // TODO: reset user to null in query cache
     queryClient.setQueryData(queryKeys.user, null);
-    queryClient.removeQueries('user-appointments');
+    // queryClient.removeQueries('user-appointments');
     // 하나 이상의 쿼리 키에 removeQueries를 실행하려면 removeQueries를 여러 번 동일하게 실행하면 됨
+    queryClient.removeQueries([queryKeys.appointments, queryKeys.user]);
+    // 사용자를 이미 무효화했으므로 id에는 접근할 수 없음
+    // 하지만 removeQueries 도 쿼리키 접두사를 사용하기 때문에
+    // 쿼리키에 두가지가 첫 항목으로 포함되어 있으면 사용자 id는 지정할 필요가 없음
   }
 
   return { user, updateUser, clearUser };
